@@ -8,16 +8,19 @@
 # Imports
 import win32api
 import random
+import time
 
 # Constants
 MAX_WIDTH  = 1280
 MAX_LENGTH = 1024
 
 def main():
-    rand_x = random.randint(0,MAX_WIDTH)
-    rand_y = random.randint(0,MAX_LENGTH)
-    win32api.SetCursorPos((rand_x,rand_y))
-    print(f'Hooray! Your cursor is at ({rand_x},{rand_y})')
+    while(True):
+        rand_x = random.randint(0,MAX_WIDTH)
+        rand_y = random.randint(0,MAX_LENGTH)
+        win32api.SetCursorPos((rand_x,rand_y))
+        print(f'Hooray! Your cursor is at ({rand_x},{rand_y})')
+        time.sleep(10)
 
 if __name__ == "__main__":
     main()
