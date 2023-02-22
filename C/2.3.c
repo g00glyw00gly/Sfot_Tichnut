@@ -63,12 +63,12 @@ void getline(char s[], int maxsize){
 	// This function reads a line of characters and converts it to string.
 	int c, i;
 	
-	//
+	// The said loop. takes chars as input until '\n' or EOF are inputted.
 	for (i = 0; i<maxsize-1 && (c = getchar()) != EOF && c != '\n'; ++i){
 		s[i] = c;
 	}
 	
-	//
+	// A check to verify that the line has ended.
 	if (c == '\n'){
 		s[i] = c;
 		++i;
