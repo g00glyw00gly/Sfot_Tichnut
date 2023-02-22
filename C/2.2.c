@@ -19,7 +19,8 @@ int getline(char line[], int maxline);
 int main(){
 	char s[MAXSIZE];
 	int count = getline(s, MAXSIZE);
-	printf("string is: %s. length is: %d", s, count);
+	printf("%s", s);
+	//printf("The string is: %s. It's length is (including '\\0'): %d.", s, count);
 }
 
 int getline(char s[], int maxsize){
@@ -27,20 +28,20 @@ int getline(char s[], int maxsize){
 	int c, i;
 	
 	// The said loop. takes chars as input until '\n' or EOF are inputted.
-	for (i = 0; c = getchar() != EOF; ++i){
-		printf("%d", c);
+	for (i = 0; (c = getchar()) != '\n'; ++i){
+		//printf("%c - %c\n", c, s[i]);
+		//
 		if(i < maxsize-1){
-			if(c != '\n'){
+			
+			//
+			if(c != EOF){
 				s[i] = c;
+				printf("%c - %c\n", c, s[i]);
 			}
 		}	
 	}
-	
-	// A check to verify that the line has ended.
-	if (c == '\n'){
-		s[i] = c;
-		++i;
-	}
+	++i;
 	s[i] = '\0';
+	printf("%d\n",s[i]);
 	return i;
 }
