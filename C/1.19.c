@@ -1,6 +1,15 @@
 #include <stdio.h>
 #define MAXLINE 1000 //
 
+/*
+Name: 1.19.c
+Written by: Ori P
+Date: 21.2.23
+
+this code takes a charcter string and 
+reverses it one line at a time.
+*/
+
 int getline(char line[], int maxline);
 int reverse(char to[], char from[], int len);
 
