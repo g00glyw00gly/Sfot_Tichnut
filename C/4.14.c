@@ -11,7 +11,8 @@ Name: 4.14.c
 Written by: Ori P
 Date: 26/02/23
 
-desc
+This code takes a data type and two variables as input, 
+then interchange their values using macro and prints the result.  
 */
 
 int getline(char s[], int maxsize);
@@ -120,7 +121,7 @@ double atof_book(char s[]){
 		val = 10.0 * val + (s[i] - '0' );
 	}
 	
-	// Don't Calculates the decimal point 
+	// Doesn't Calculate the decimal point 
 	if(s[i] == '.'){
 		i++;
 	}
