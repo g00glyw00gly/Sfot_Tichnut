@@ -5,7 +5,6 @@
 # define INT "int"
 # define swap(t,x,y) {t temp; temp = x; x = y; y = temp;}
 
-
 /*
 Name: 4.14.c
 Written by: Ori P
