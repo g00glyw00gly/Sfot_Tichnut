@@ -13,13 +13,21 @@ using namespace std;
 
 class Student{
 	public:
+	
+	// Set student's name.
 	void setName(string str){
 		name = str;
 	}
+	
+	// Set student's name.
 	void setGrade(string str){
 		grade = str;
 	}
+	
+	// Sets student's score.
 	int setScore(int s){
+		
+		// Check if score is legal.
 		if(s <= 100 && s >= 0){
 			score = s;
 			return 1;
@@ -29,12 +37,18 @@ class Student{
 			return 0;
 		}
 	}
+	
+	// Return student's name.
 	string getName(){
 		return name;
 	}
+	
+	// Return student's grade. 
 	string getGrade(){
 		return grade;
 	}
+	
+	// Return student's score.
 	int getScore(){
 		return score;
 	}
@@ -47,13 +61,21 @@ class Student{
 
 class Teacher{
 	public:
+	
+	// Set teacher name.
 	void setName(string str){
 		name = str;
 	}
+	
+	// Set which grade teacher is teaching.
 	void setGrade(string str){
 		grade = str;
 	}
+	
+	// Set Teacher's Evilness level.
 	int setEvilness(float e){
+		
+		// Check if the value is legal.
 		if(e <= 10.0 && e >= 0.0){
 			evil = e;
 			return 1;
@@ -63,21 +85,29 @@ class Teacher{
 			return 0;
 		}
 	}
+	
+	// Returns teacher's name.
 	string getName(){
 		return name;
 	}
+	
+	// Returns teacher's class
 	string getGrade(){
 		return grade;
 	}
+	
+	// Returns teacher's evilness level.
 	int getEvilness(){
 		return evil;
 	}
 	
-	//
+	// Sets a student's final score in physics and returns it.
 	int finalScore(Student sdt){
 		int score;
 		srand((unsigned) time(NULL));
 		score = (rand() % 100) - evil;
+		
+		// Checks if after the substration the score is illegal (lower than 0).
 		if(score < 0){
 			score = 0;
 		}
@@ -114,9 +144,12 @@ int main(){
 	cout << "Which Grade does your physics teacher teach?\n";
 	cin >> str;
 	tcr.setGrade(str);
-	cout << "How much evil is your physics teacher?\n";
+	cout << "What is your physics teacher's evilness level?\n";
 	cin >> evil;
-	tcr.setEvilness(evil);
+	while(tcr.setEvilness(evil) == 0){
+		cout << "What is your physics teacher's evilness level?\n";
+		cin >> evil;
+	}
 	
 	// Printing finale grade
 	cout << "\nOkay " << sdt.getName() << ", ";
