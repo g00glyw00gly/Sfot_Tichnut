@@ -32,7 +32,7 @@ class Problem{
 	}
 	
 	void solve(char idea){
-		if(idea == '3' or idea == '5'){
+		if(idea == '3'){
 			solved = true;
 			cout << "That's a great idea!\n\n";
 		}
@@ -49,34 +49,34 @@ class Problem{
 
 int main(){ 
 	Problem wh;
-	wh.setName("World Hunger");
-	string solution;
-	
 	cout << " Are there hungry children in Africa? [y/n]\n";
 	char answer;
 	cin >> answer;
+	
+	// Making the user realize that world hunger is a serius problem.
 	while(answer != 'y'){
 		cout << " Liar\n\n Are there hungry children in Africa? [y/n]\n";
 		cin >> answer;
 	}
-	
+	wh.setName("World Hunger");
 	cout << " Correct! World Hunger is a major problem!\n Let's Solve it!\n\n";
-	cout << " I have done the hard part and searched the residence of the most brilliant minds in Israel\
- (and probably the whole world) - Stips, for a solution.\n Here are the options:\n\n";
+	cout << " I have done the hard part and searched the residence of the most brilliant minds in Israel \
+	(and probably the whole world) - Stips, for a solution.\n Here are the options:\n\n";
 	
-	//
+	// Looping until user has solved the world hunger problem. 
 	while(wh.beenSolved() == false){
 		cout << OPTION_ONE << "\n" << OPTION_TWO << "\n" << OPTION_THREE << "\n"<< OPTION_FOUR << "\n\n";
 		cout << " How are we gonna solve world hunger?\n";
 		cin >> answer;
 		wh.solve(answer);
 		
+		// Preform differently according to inputed answer.
 		switch(answer){
 			case '1':
 				cout << " That's a very popular idea that may be the solution to world hunger...\n";
 				cout << " HOWEVER, as disscussed in the excellent TV show \"It's Always Sunny In Philadelphia\n"; 
 				cout << "eating human flesh makes you develope an insatiable hunger that never";
-				cout << " stops and you will still be hungry.\n To Read more about that visit\n";
+				cout << " stops and you will still be hungry.\n To Read more about that visit\n\n";
 				cout << LINK_ONE << "\n\n";
 				break;
 				
@@ -84,14 +84,14 @@ int main(){
 				cout << " That COULD solve world hunger...\n";
 				cout << " HOWEVER, some of the insects are really gross and not everyone will agree to consume them.";
 				cout << " In addition, insects are an important part of our eco systems so bad things will happen if we eat them all.\n";
-				cout << " To read more about that visit\n";
+				cout << " To read more about that visit\n\n";
 				cout << LINK_TWO << "\n\n";
 				break;
 				
 			case '3':
 				cout << " That is a very nice and noble thing to do and could probably end world hunger.\n";
 				cout << " It may not solve the problem entirly but it's a good place to start from.\n";
-				cout << " To read more about that visit\n";
+				cout << " To read more about that visit\n\n";
 				cout << LINK_THREE << "\n\n";
 				break;
 				
@@ -99,15 +99,17 @@ int main(){
 				cout << " It has been proven that even half of his money could solve the problem...\n";
 				cout << " HOWEVER, he ain't owe nothing to nobody and that's his money, he worked hard for the money.";
 				cout << " In addintion, he has founded an charity that encoureges \n rich people to donate lots of money after they die.\n";
-				cout << " To read more about that visit\n";
+				cout << " To read more about that visit\n\n";
 				cout << LINK_FOUR << "\n\n";
 				break;
-			case '5':
-				break;
+			
+			// Illegal option has been inputed.
 			default:
 				cout << "That's not a valid option... (Enter the option's number)\n";
 				break;
 		}
+		
+		// Informing the user about the problem's state.
 		string solved;
 		wh.beenSolved() ? solved = "YES!" : solved = "No...";
 		cout << "World Hunger has been solved? " << solved << "\n\n";
